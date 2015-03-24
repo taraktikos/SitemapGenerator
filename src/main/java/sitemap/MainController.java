@@ -1,17 +1,32 @@
 package sitemap;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import sitemap.service.CrawlerService;
+import sitemap.service.SitemapService;
 
-/**
- * Created by Taras S. on 16.03.15.
- */
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.Set;
+
 @RequestMapping("")
 @Controller
 public class MainController {
+
+    @Autowired
+    CrawlerService crawlerService;
+
+    @Autowired
+    SitemapService sitemapService;
+
+    @Value("${sitemap.baseDir}")
+    private String siteMapBaseDir;
 
     @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
     public String index() {
@@ -24,9 +39,34 @@ public class MainController {
     }
 
     @RequestMapping(value = "generate", method = RequestMethod.POST)
-    public String generateSitemap(@RequestParam("url") String url) {
+    public String generateSitemap(@RequestParam("url") String url, Model model) {
         System.out.println(url);
+
+        File baseDir = new File(siteMapBaseDir);
+        String fileNamePrefix = "sitemap2";
+        try {
+            Set<String> links = crawlerService.collectLinksFromUrl(url);
+            System.out.println("Total links count: " + links.size());
+            sitemapService.generateXml(url, links, baseDir, fileNamePrefix);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        model.addAttribute("fileName", fileNamePrefix + ".xml");
         return "index";
     }
+
+    @RequestMapping(value = "download", method = RequestMethod.GET)
+    public void download(@RequestParam("fileName") String fileName, HttpServletResponse response) {
+        File file = new File(siteMapBaseDir + fileName);
+        response.setContentType("application/xml");
+        response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
+        response.setContentLength((int) file.length());
+        try {
+            FileCopyUtils.copy(new FileInputStream(file), response.getOutputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 }

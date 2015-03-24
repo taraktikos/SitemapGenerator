@@ -27,19 +27,24 @@
 
 <div class="container">
     <div class="col-sm-10">
-        <h1>Generate sitemap</h1>
-        <form class="form-horizontal" th:action="@{/generate}" method="post">
-            <div class="form-group">
-                <div class="col-sm-10">
-                    <input class="form-control" id="url" placeholder="Enter URL" name="url" />
+        <div th:if="${fileName==null}">
+            <h1>Generate sitemap</h1>
+            <form class="form-horizontal" th:action="@{/generate}" method="post">
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <input class="form-control" id="url" placeholder="Enter URL" name="url" type="url" required="required" />
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-10">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
+        <div th:if="${fileName!=null}">
+            <a href="#" class="btn btn-primary" th:href="@{/download(fileName=${fileName})}">Download sitemap</a>
+        </div>
     </div>
 </div>
 </body>
