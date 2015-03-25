@@ -4,6 +4,10 @@ import com.redfin.sitemapgenerator.WebSitemapGenerator;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Set;
 
 @Service

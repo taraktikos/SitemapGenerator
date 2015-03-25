@@ -13,6 +13,8 @@ import sitemap.service.SitemapService;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Set;
 
 @RequestMapping("")
@@ -43,7 +45,8 @@ public class MainController {
         System.out.println(url);
 
         File baseDir = new File(siteMapBaseDir);
-        String fileNamePrefix = "sitemap2";
+        String date = new SimpleDateFormat("yyyyMMddhhmm").format(new Date());
+        String fileNamePrefix = "sitemap" + date;
         try {
             Set<String> links = crawlerService.collectLinksFromUrl(url);
             System.out.println("Total links count: " + links.size());
